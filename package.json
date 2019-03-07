@@ -1,0 +1,22 @@
+{
+  "name": "angelscripts-k8s-deployments",
+  "peerDependencies": {
+    "organic-angel": "0.3.x"
+  },
+  "dependencies": {
+    "angelabilities-exec": "^1.0.0",
+    "json-to-pretty-yaml": "^1.2.2",
+    "organic-dna-branches": "0.0.2",
+    "organic-stem-skeleton-find-root": "^1.0.1",
+    "replace-in-file": "^3.4.3"
+  },
+  "devDependencies": {
+    "eslint": "^4.18.2",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-jest": "^21.24.1",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1"
+  }
+}
