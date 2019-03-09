@@ -5,7 +5,9 @@ module.exports = function (angel) {
     let REPO = require('lib/full-repo-path')
     let packagejson = require(path.join(process.cwd(), 'package.json'))
     let cellName = packagejson.name
-    let cellPort = 3003 // TODO get it from DNA
+    // TODO use cell's DNA as knowledge source to construct
+    // docker-compose service
+    let cellPort = 3003
     console.log(`version: "3.4"
 services:
   ${cellName}:

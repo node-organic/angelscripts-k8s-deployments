@@ -5,5 +5,6 @@ module.exports = async function (angel) {
   require('./tasks/compose')(angel)
   require('./tasks/delete')(angel)
   require('./tasks/docker')(angel)
+  require('./tasks/logs')(angel)
   require('./tasks/release')(angel)
 }
