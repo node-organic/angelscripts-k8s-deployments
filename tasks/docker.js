@@ -10,7 +10,8 @@ module.exports = function (angel) {
     // TODO: use only production node_modules
     console.log(`FROM node:11.10.1-alpine
 COPY . .
-WORKDIR ${cellInfo.cwd}
+WORKDIR ${cellInfo.dna.cwd}
+ENV CELL_MODE _production
 CMD ["node", "index.js"]`)
   })
 }

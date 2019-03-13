@@ -14,9 +14,9 @@ module.exports = function (angel) {
     let imageTag = packagejson.name + packagejson.version
     let cmd = [
       // create dest building container dir
-      `mkdir -p ${buildDestinationPath}/${cellInfo.cwd}`,
+      `mkdir -p ${buildDestinationPath}/${cellInfo.dna.cwd}`,
       // move cell's code into its appropriate place
-      `cp -rL . ${buildDestinationPath}/${cellInfo.cwd}`,
+      `cp -rL . ${buildDestinationPath}/${cellInfo.dna.cwd}`,
       // inject dockerfile into building container root
       `npx angel docker > ${buildDestinationPath}/Dockerfile`,
       // copy cell common dependencies
