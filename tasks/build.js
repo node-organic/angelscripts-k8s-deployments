@@ -12,23 +12,42 @@ module.exports = function (angel) {
     console.log(`building into ${buildDestinationPath}`)
     let registry = cellInfo.dna.registry || ''
     let imageTag = packagejson.name + packagejson.version
-    let cmd = [
-      // create dest building container dir
-      `mkdir -p ${buildDestinationPath}/${cellInfo.dna.cwd}`,
-      // move cell's code into its appropriate place
-      `cp -rL . ${buildDestinationPath}/${cellInfo.dna.cwd}`,
-      // inject dockerfile into building container root
-      `npx angel docker > ${buildDestinationPath}/Dockerfile`,
-      // copy cell common dependencies
-      `cp -rL ${fullRepoPath}/cells/node_modules ${buildDestinationPath}/cells/node_modules`,
-      // copy cell dna
-      `cp -rL ${fullRepoPath}/dna ${buildDestinationPath}/dna`,
-      // build the container
-      `cd ${buildDestinationPath}`,
-      `docker build -t ${packagejson.name}:${packagejson.version} .`,
-      `docker tag ${packagejson.name}:${packagejson.version} ${registry}:${imageTag}`,
-      `docker push ${registry}:${imageTag}`
-    ].join(' && ')
+    let cmd = ''
+    if (cellInfo.dna.cellKind === 'webcell') {
+      cmd = [
+        // build assets/js/css into /dist forlder
+        `npm run compile`,
+        // create dest building container dir
+        `mkdir -p ${buildDestinationPath}`,
+        // move cell's code into its appropriate place
+        `cp -rL ./dist ${buildDestinationPath}`,
+        // inject dockerfile into building container root
+        `npx angel docker > ${buildDestinationPath}/Dockerfile`,
+        // build the container
+        `cd ${buildDestinationPath}`,
+        `docker build -t ${packagejson.name}:${packagejson.version} .`,
+        `docker tag ${packagejson.name}:${packagejson.version} ${registry}:${imageTag}`,
+        `docker push ${registry}:${imageTag}`
+      ].join(' && ')
+    } else {
+      cmd = [
+        // create dest building container dir
+        `mkdir -p ${buildDestinationPath}/${cellInfo.dna.cwd}`,
+        // move cell's code into its appropriate place
+        `cp -rL . ${buildDestinationPath}/${cellInfo.dna.cwd}`,
+        // inject dockerfile into building container root
+        `npx angel docker > ${buildDestinationPath}/Dockerfile`,
+        // copy cell common dependencies
+        `cp -rL ${fullRepoPath}/cells/node_modules ${buildDestinationPath}/cells/node_modules`,
+        // copy cell dna
+        `cp -rL ${fullRepoPath}/dna ${buildDestinationPath}/dna`,
+        // build the container
+        `cd ${buildDestinationPath}`,
+        `docker build -t ${packagejson.name}:${packagejson.version} .`,
+        `docker tag ${packagejson.name}:${packagejson.version} ${registry}:${imageTag}`,
+        `docker push ${registry}:${imageTag}`
+      ].join(' && ')
+    }
     console.log('running:', cmd)
     await angel.exec(cmd)
     console.log(`done, pushed to ${registry}:${imageTag}`)
