@@ -41,8 +41,8 @@ module.exports = function (angel) {
     cmd = cmd.concat([
       // build the container
       `cd ${buildDestinationPath}`,
-      `docker build -t ${packagejson.name}:${packagejson.version} .`,
-      `docker tag ${packagejson.name}:${packagejson.version} ${registry}/${imageTag}`,
+      `docker build -t ${imageTag} .`,
+      `docker tag ${imageTag} ${registry}/${imageTag}`,
       `docker push ${registry}/${imageTag}`
     ])
     cmd = cmd.join(' && ')

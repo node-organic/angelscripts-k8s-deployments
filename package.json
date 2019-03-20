@@ -1,5 +1,6 @@
 {
   "name": "angelscripts-k8s-deployments",
+  "version": "1.0.0",
   "peerDependencies": {
     "organic-angel": "0.3.x"
   },
