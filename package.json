@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "angelabilities-exec": "^1.0.0",
+    "chalk": "^2.4.2",
     "json-to-pretty-yaml": "^1.2.2",
     "organic-dna-branches": "0.0.2",
     "organic-stem-skeleton-find-root": "^1.0.1",
