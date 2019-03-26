@@ -51,6 +51,7 @@ const getPodsForCell = async function (cellName) {
   }
   return new Promise((resolve, reject) => {
     let cmd = `kubectl get pods ${labels.join(' ')} --no-headers -o name`
+    console.info('get pods matching', labels)
     exec(cmd, function (err, stdout, stderr) {
       if (err) return reject(err)
       resolve(stdout.split('\n').map((value) => {

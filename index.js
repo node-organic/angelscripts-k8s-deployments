@@ -7,4 +7,5 @@ module.exports = async function (angel) {
   require('./tasks/docker')(angel)
   require('./tasks/logs')(angel)
   require('./tasks/release')(angel)
+  require('./tasks/cp')(angel)
 }
