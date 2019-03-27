@@ -13,6 +13,17 @@ module.exports = function (angel) {
     let registry = cellInfo.dna.registry || ''
     let imageTag = packagejson.name + ':' + packagejson.version
     let cmd = ''
+    if (cellInfo.dna.cellKind === 'docker') {
+      let cmd = [
+        `docker build -t ${imageTag} .`,
+        `docker tag ${imageTag} ${registry}/${imageTag}`,
+        `docker push ${registry}/${imageTag}`
+      ].join(' && ')
+      console.log('running:', cmd)
+      await angel.exec(cmd)
+      console.log(`done, pushed to ${registry}/${imageTag}`)
+      return
+    }
     if (cellInfo.dna.cellKind === 'webcell') {
       cmd = [
         // build assets/js/css into /dist forlder
