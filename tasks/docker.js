@@ -5,7 +5,7 @@ module.exports = function (angel) {
   angel.on('docker', async function (angel) {
     let packagejson = require(path.join(process.cwd(), 'package.json'))
     let fullRepoPath = await findSkeletonRoot()
-    let loadCellInfo = require(path.join(fullRepoPath, 'cells/node_modules/lib/load-cell-info'))
+    const loadCellInfo = require(path.join(fullRepoPath, 'cells/node_modules/lib/load-cell-info'))
     let cellInfo = await loadCellInfo(packagejson.name)
     if (cellInfo.dna.cellKind === 'webcell') {
       console.log(`FROM nginx:latest
@@ -18,6 +18,8 @@ RUN apk update && apk upgrade && \
   apk add --no-cache bash git openssh
 COPY ${cellInfo.dna.cwd}/package*.json ${cellInfo.dna.cwd}/
 RUN cd ${cellInfo.dna.cwd} && npm install
+COPY cells/node_modules/server/package*.json cells/node_modules/server/
+RUN cd cells/node_modules/server && npm install
 COPY cells/node_modules/lib/package*.json cells/node_modules/lib/
 RUN cd cells/node_modules/lib && npm install
 COPY . .
