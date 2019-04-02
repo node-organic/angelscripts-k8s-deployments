@@ -24,7 +24,6 @@ COPY cells/node_modules/lib/package*.json cells/node_modules/lib/
 RUN cd cells/node_modules/lib && npm install --production
 COPY . .
 WORKDIR ${cellInfo.dna.cwd}
-ENV CELL_MODE _production
 ENV NODE_ENV production
 CMD ["node", "index.js"]`)
     }
