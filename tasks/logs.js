@@ -17,7 +17,12 @@ module.exports = function (angel) {
       let cmd = `kubectl logs -f ${pod} --timestamps --since 10m`
       let podColor = colorMap[podIndex]
       console.log(chalk.keyword(podColor)(cmd))
-      let child = exec(cmd)
+      let child = exec(cmd, {
+        cwd: process.cwd(),
+        maxBuffer: Infinity,
+        env: process.env
+      })
+      child.stderr.pipe(process.stderr)
       child.stdout.on('data', function (chunk) {
         console.log(chalk.bgKeyword('blue')(podIndex.toString()), chalk.keyword(podColor)(chunk.toString()))
       })
