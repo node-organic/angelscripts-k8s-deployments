@@ -15,9 +15,7 @@ module.exports = function (angel) {
     let cmd = ''
     if (cellInfo.dna.cellKind === 'docker') {
       let cmd = [
-        `docker build -t ${imageTag} .`,
-        `docker tag ${imageTag} ${registry}/${imageTag}`,
-        `docker push ${registry}/${imageTag}`
+        `docker build -t ${imageTag} .`
       ].join(' && ')
       console.log('running:', cmd)
       await angel.exec(cmd)
@@ -53,13 +51,11 @@ module.exports = function (angel) {
     cmd = cmd.concat([
       // build the container
       `cd ${buildDestinationPath}`,
-      `docker build -t ${imageTag} .`,
-      `docker tag ${imageTag} ${registry}/${imageTag}`,
-      `docker push ${registry}/${imageTag}`
+      `docker build -t ${imageTag} .`
     ])
     cmd = cmd.join(' && ')
     console.log('running:', cmd)
     await angel.exec(cmd)
-    console.log(`done, pushed to ${registry}/${imageTag}`)
+    console.log(`done, build ${imageTag}`)
   })
 }

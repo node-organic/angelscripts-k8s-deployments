@@ -16,13 +16,18 @@ COPY ./dist /usr/share/nginx/html
       console.log(`FROM node:11.10.1-alpine
 RUN apk update && apk upgrade && \
   apk add --no-cache bash git openssh
+
 COPY ${cellInfo.dna.cwd}/package*.json ${cellInfo.dna.cwd}/
 RUN cd ${cellInfo.dna.cwd} && npm install --production
+
 COPY cells/node_modules/server/package*.json cells/node_modules/server/
 RUN cd cells/node_modules/server && npm install --production
+
 COPY cells/node_modules/lib/package*.json cells/node_modules/lib/
 RUN cd cells/node_modules/lib && npm install --production
+
 COPY . .
+
 WORKDIR ${cellInfo.dna.cwd}
 ENV NODE_ENV production
 CMD ["node", "index.js"]`)

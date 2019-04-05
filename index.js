@@ -8,4 +8,5 @@ module.exports = async function (angel) {
   require('./tasks/release')(angel)
   require('./tasks/cp')(angel)
   require('./tasks/dna-to-yaml')(angel)
+  require('./tasks/publish')(angel)
 }
