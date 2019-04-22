@@ -1,0 +1,121 @@
+const { exec } = require('child_process')
+const path = require('path')
+const semver = require('semver')
+const dependencyTree = require('dependency-tree')
+const uniq = require('lodash.uniq')
+const resolveModule = require('resolve')
+const findSkeletonRoot = require('organic-stem-skeleton-find-root')
+const fg = require('fast-glob')
+const {forEachSeries} = require('p-iteration')
+
+module.exports = function (angel) {
+  angel.on('changes', async function () {
+    let packagejson_path = path.join(process.cwd(), 'package.json')
+    let packagejson = require(packagejson_path)
+    let lastReleaseCommit = await getLastReleaseCommit(packagejson.name)
+    let cmd = `git diff --name-only ${lastReleaseCommit}`
+    let changedFiles = (await execAndReturnOutput(cmd)).split('\n').filter(v => v)
+    if (changedFiles.length === 0) return
+    let dependencies = await dependenciesList(packagejson.name, packagejson.sources || [])
+    dependencies.push(packagejson_path)
+    let result = []
+    for (let i = 0; i < changedFiles.length; i++) {
+      for (let k = 0; k < dependencies.length; k++) {
+        if (dependencies[k].indexOf(changedFiles[i]) !== -1) {
+          result.push(changedFiles[i])
+        }
+      }
+    }
+    console.log(result.join('\n'))
+  })
+
+  const execAndReturnOutput = function (cmd) {
+    return new Promise((resolve, reject) => {
+      let child = exec(cmd, {
+        cwd: process.cwd(),
+        env: process.env
+      })
+      let output = ''
+      child.stdout.on('data', function (chunk) {
+        output += chunk.toString()
+      })
+      child.on('exit', function () {
+        resolve(output)
+      })
+    })
+  }
+
+  const getLastReleaseCommit = async function (cellName) {
+    let cmd = `git show-ref --tags | grep ${cellName}`
+    let tagCommitPairs = (await execAndReturnOutput(cmd)).split('\n').filter(v => v)
+    let highestRelease = null
+    let highestReleaseCommit = null
+    for (let i = 0; i < tagCommitPairs.length; i++) {
+      let parts = tagCommitPairs[i].split(' ')
+      let commit = parts[0]
+      let iRelease = parts[1].replace(cellName + '-', '') // based on `release` impl
+      if (highestRelease === null || semver.lt(highestRelease, iRelease)) {
+        highestRelease = iRelease
+        highestReleaseCommit = commit
+      }
+    }
+    if (!highestReleaseCommit) {
+      highestReleaseCommit = (await execAndReturnOutput(`git rev-parse HEAD`))
+    }
+    return highestReleaseCommit
+  }
+
+  const filterNodeModules = function (path) {
+    if (path.indexOf('cells/node_modules') !== -1 && path.indexOf('cells/node_modules') === path.lastIndexOf('cells/node_modules')) {
+      return true
+    }
+    return path.indexOf('node_modules') === -1
+  }
+
+  const dependenciesList = async function (cellName, sources) {
+    let localModules = await getLocalOrganellesPaths(cellName)
+    localModules = localModules.concat(await getLocalSources(sources))
+    let organelleDeps = []
+    localModules.forEach(function (srcFile) {
+      organelleDeps = organelleDeps.concat(dependencyTree.toList({
+        filename: srcFile,
+        directory: process.cwd(),
+        filter: filterNodeModules
+      }))
+    })
+    return uniq(organelleDeps)
+  }
+
+  const getLocalOrganellesPaths = async function (cellName) {
+    let fullRepoPath = await findSkeletonRoot()
+    const loadCellInfo = require(path.join(fullRepoPath, 'cells/node_modules/lib/load-cell-info'))
+    let cellInfo = await loadCellInfo(cellName)
+    let sources = []
+    for (let key in cellInfo.dna.build) {
+      sources.push(cellInfo.dna.build[key].source)
+    }
+    return Promise.all(sources.map(async (source) => {
+      return resolveModulePath(source)
+    }))
+  }
+
+  const getLocalSources = async function (packageSources) {
+    let files = []
+    await forEachSeries(packageSources, async (sourcePattern) => {
+      files = files.concat(await fg(sourcePattern))
+    })
+    return files
+  }
+
+  const resolveModulePath = async function (modulepath) {
+    let basedir = process.cwd()
+    return new Promise((resolve, reject) => {
+      resolveModule(modulepath, {
+        basedir: basedir
+      }, (err, res) => {
+        if (err) return reject(err)
+        resolve(res)
+      })
+    })
+  }
+}

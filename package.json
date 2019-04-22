@@ -7,9 +7,14 @@
   "dependencies": {
     "angelabilities-exec": "^1.0.0",
     "chalk": "^2.4.2",
+    "dependency-tree": "^7.0.2",
+    "fast-glob": "^2.2.6",
     "json-to-pretty-yaml": "^1.2.2",
+    "lodash.uniq": "^4.5.0",
     "organic-dna-branches": "0.0.2",
     "organic-stem-skeleton-find-root": "^1.0.1",
+    "p-iteration": "^1.1.8",
+    "resolve": "^1.10.0",
     "semver": "^6.0.0"
   },
   "devDependencies": {

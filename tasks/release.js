@@ -28,7 +28,12 @@ module.exports = function (angel) {
     await angel.exec([
       `npx angel build`,
       `npx angel publish`,
-      `npx angel apply deployment`
+      `git add package.json`,
+      `git commit -am '${packagejson.name}-${packagejson.version}'`,
+      `npx angel apply deployment`,
+      `git tag -a ${packagejson.name}-${packagejson.version} -m '${packagejson.name}-${packagejson.version}'`,
+      `git push --tags`,
+      `git push`
     ].join(' && '))
   })
 }
