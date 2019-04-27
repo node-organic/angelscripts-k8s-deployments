@@ -10,4 +10,7 @@ module.exports = async function (angel) {
   require('./tasks/dna-to-yaml')(angel)
   require('./tasks/publish')(angel)
   require('./tasks/changes')(angel)
+  process.on('unhandledRejection', (err) => {
+    throw err
+  })
 }

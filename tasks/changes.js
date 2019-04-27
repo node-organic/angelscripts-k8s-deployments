@@ -12,21 +12,44 @@ module.exports = function (angel) {
   angel.on('changes', async function () {
     let packagejson_path = path.join(process.cwd(), 'package.json')
     let packagejson = require(packagejson_path)
+    // check/get last release commit
     let lastReleaseCommit = await getLastReleaseCommit(packagejson.name)
-    let cmd = `git diff --name-only ${lastReleaseCommit}`
+    if (!lastReleaseCommit) {
+      console.log('not released')
+      return process.exit(1)
+    }
+    // check local files
+    let REPO = await findSkeletonRoot()
+    let cwd = process.cwd().replace(REPO + '/', '')
+    let cmd = `git diff --name-only ${lastReleaseCommit} | grep ${cwd}`
     let changedFiles = (await execAndReturnOutput(cmd)).split('\n').filter(v => v)
-    if (changedFiles.length === 0) return
+    if (changedFiles.length !== 0) {
+      console.log(changedFiles.join('\n'))
+      return process.exit(1)
+    }
+
+    // get all changed files
+    let cmdAll = `git diff --name-only ${lastReleaseCommit}`
+    let changedFilesAll = (await execAndReturnOutput(cmdAll)).split('\n').filter(v => v)
+    if (changedFilesAll.length === 0) {
+      return
+    }
+    // query and build all cell dependencies as file locations
     let dependencies = await dependenciesList(packagejson.name, packagejson.sources || [])
     dependencies.push(packagejson_path)
+
+    // match cell deps and all changed files
+    // inferring need to for release
     let result = []
-    for (let i = 0; i < changedFiles.length; i++) {
+    for (let i = 0; i < changedFilesAll.length; i++) {
       for (let k = 0; k < dependencies.length; k++) {
-        if (dependencies[k].indexOf(changedFiles[i]) !== -1) {
-          result.push(changedFiles[i])
+        if (dependencies[k].indexOf(changedFilesAll[i]) !== -1) {
+          result.push(changedFilesAll[i])
         }
       }
     }
     console.log(result.join('\n'))
+    if (result.length) process.exit(1)
   })
 
   const execAndReturnOutput = function (cmd) {
@@ -53,14 +76,11 @@ module.exports = function (angel) {
     for (let i = 0; i < tagCommitPairs.length; i++) {
       let parts = tagCommitPairs[i].split(' ')
       let commit = parts[0]
-      let iRelease = parts[1].replace(cellName + '-', '') // based on `release` impl
+      let iRelease = parts[1].replace('refs/tags/', '').replace(cellName + '-', '')
       if (highestRelease === null || semver.lt(highestRelease, iRelease)) {
         highestRelease = iRelease
         highestReleaseCommit = commit
       }
-    }
-    if (!highestReleaseCommit) {
-      highestReleaseCommit = (await execAndReturnOutput(`git rev-parse HEAD`))
     }
     return highestReleaseCommit
   }

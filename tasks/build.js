@@ -34,19 +34,22 @@ module.exports = function (angel) {
         `npx angel docker > ${buildDestinationPath}/Dockerfile`
       ]
     } else {
+      let common_deps = ['server', 'lib']
+      if (packagejson.common_dependencies) {
+        common_deps = packagejson.common_dependencies
+      }
       cmd = [
         // move cell's code into its appropriate place
         // use angel cp to exclude gitingored files
         `npx angel cp ${cellInfo.dna.cwd} ${buildDestinationPath}/${cellInfo.dna.cwd}`,
-        // copy cell common dependencies
-        `npx angel cp cells/node_modules/server ${buildDestinationPath}/cells/node_modules/server`,
-        // copy cell common dependencies
-        `npx angel cp cells/node_modules/lib ${buildDestinationPath}/cells/node_modules/lib`,
         // copy cell dna
         `npx angel cp dna ${buildDestinationPath}/dna`,
         // inject dockerfile into building container root
         `npx angel docker > ${buildDestinationPath}/Dockerfile`
       ]
+      cmd = cmd.concat(common_deps.map(function (v) {
+        return `npx angel cp cells/node_modules/${v} ${buildDestinationPath}/cells/node_modules/${v}`
+      }))
     }
     cmd = cmd.concat([
       // build the container

@@ -7,24 +7,32 @@ module.exports = function (angel) {
     let fullRepoPath = await findSkeletonRoot()
     const loadCellInfo = require(path.join(fullRepoPath, 'cells/node_modules/lib/load-cell-info'))
     let cellInfo = await loadCellInfo(packagejson.name)
+    let nodeVersion = '11.10.1'
+    if (packagejson.engines && packagejson.engines.node) {
+      nodeVersion = packagejson.engines.node
+    }
     if (cellInfo.dna.cellKind === 'webcell') {
       console.log(`FROM nginx:latest
 EXPOSE 80
 COPY ./dist /usr/share/nginx/html
 `)
     } else {
-      console.log(`FROM node:11.10.1-alpine
+      let common_deps = ['server', 'lib']
+      if (packagejson.common_dependencies) {
+        common_deps = packagejson.common_dependencies
+      }
+      console.log(`FROM node:${nodeVersion}-alpine
 RUN apk update && apk upgrade && \
   apk add --no-cache bash git openssh
 
+${common_deps.map(function (v) {
+    return `COPY cells/node_modules/${v}/package*.json cells/node_modules/${v}/
+RUN cd cells/node_modules/${v} && npm install --production
+`
+  }).join('\n')}
+
 COPY ${cellInfo.dna.cwd}/package*.json ${cellInfo.dna.cwd}/
 RUN cd ${cellInfo.dna.cwd} && npm install --production
-
-COPY cells/node_modules/server/package*.json cells/node_modules/server/
-RUN cd cells/node_modules/server && npm install --production
-
-COPY cells/node_modules/lib/package*.json cells/node_modules/lib/
-RUN cd cells/node_modules/lib && npm install --production
 
 COPY . .
 
