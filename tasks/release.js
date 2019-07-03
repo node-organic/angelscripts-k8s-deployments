@@ -26,11 +26,11 @@ module.exports = function (angel) {
     packagejson.version = newVersion
     await writePrettyJSON(packagejson_path, packagejson)
     await angel.exec([
-      `npx angel build`,
-      `npx angel publish`,
+      packagejson.scripts.build || `npx angel build`,
+      packagejson.scripts.publish || `npx angel publish`,
       `git add package.json`,
       `git commit -am '${packagejson.name}-${packagejson.version}'`,
-      `npx angel apply deployment`,
+      packagejson.scripts.apply || `npx angel apply deployment`,
       `git tag -a ${packagejson.name}-${packagejson.version} -m '${packagejson.name}-${packagejson.version}'`,
       `git push --tags`,
       `git push`
