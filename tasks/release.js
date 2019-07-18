@@ -11,9 +11,9 @@ const writePrettyJSON = function (filepath, jsonDiff) {
 }
 module.exports = function (angel) {
   angel.on('release', async function (angel) {
-    angel.do('release patch')
+    angel.do('release patch production')
   })
-  angel.on('release :versionChange', async function (angel) {
+  angel.on('release :versionChange :branchName', async function (angel) {
     let packagejson_path = path.join(process.cwd(), 'package.json')
     let packagejson = require(packagejson_path)
     let versionIdentifier
@@ -30,7 +30,7 @@ module.exports = function (angel) {
       packagejson.scripts.publish || `npx angel publish`,
       `git add package.json`,
       `git commit -am '${packagejson.name}-${packagejson.version}'`,
-      packagejson.scripts.apply || `npx angel apply deployment`,
+      packagejson.scripts.apply || `npx angel k8s apply ${angel.cmdData.branchName}`,
       `git tag -a ${packagejson.name}-${packagejson.version} -m '${packagejson.name}-${packagejson.version}'`,
       `git push --tags`,
       `git push`

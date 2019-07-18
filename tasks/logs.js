@@ -9,10 +9,22 @@ const getPodsForCell = require('organic-stem-k8s-get-pods')
 const colorMap = ['white', 'orange', 'green', 'silver', 'blue', 'yellow']
 
 module.exports = function (angel) {
-  angel.on('logs', async function () {
+  angel.on('k8s logs', async function () {
+    angel.do('k8s logs default')
+  })
+  angel.on('k8s logs :namespace', async function (angel) {
     let packagejson = require(path.join(process.cwd(), 'package.json'))
+    let cellName = packagejson.name
+    let namespace = angel.cmdData.namespace
 
-    let pods = await getPodsForCell({cellName: packagejson.name})
+    let pods = await getPodsForCell({
+      cellName,
+      namespace
+    })
+    if (pods.length === 0) {
+      console.info(`no pods found in namespace ${namespace} for cell ${cellName}`)
+      return
+    }
     pods.forEach(function (pod, podIndex) {
       let cmd = `kubectl logs -f ${pod} --timestamps --since 10m`
       let podColor = colorMap[podIndex]
