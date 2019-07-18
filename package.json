@@ -9,7 +9,7 @@
   },
   "peerDependencies": {
     "organic-angel": "0.3.x",
-    "angelscripts-dockerbuild": "^1.0.0"
+    "angelscripts-dockerbuild": "^2.0.0"
   },
   "dependencies": {
     "angelabilities-exec": "^1.0.0",
@@ -19,7 +19,7 @@
     "json-to-pretty-yaml": "^1.2.2",
     "lodash.uniq": "^4.5.0",
     "organic-dna-branches": "0.0.2",
-    "organic-stem-k8s-get-pods": "github:node-organic/organic-stem-k8s-get-pods#v1.0.1",
+    "organic-stem-k8s-get-pods": "^1.0.2",
     "organic-stem-skeleton-find-root": "^1.0.1",
     "p-iteration": "^1.1.8",
     "resolve": "^1.10.0",
