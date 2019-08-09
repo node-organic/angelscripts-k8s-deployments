@@ -29,7 +29,7 @@ module.exports = function (angel) {
       packagejson.scripts.build || `npx angel build`,
       packagejson.scripts.publish || `npx angel publish`,
       `git add package.json`,
-      `git commit -am '${packagejson.name}-${packagejson.version}'`,
+      `git commit -m '${packagejson.name}-${packagejson.version}'`,
       packagejson.scripts.apply || `npx angel k8s apply ${angel.cmdData.branchName}`,
       `git tag -a ${packagejson.name}-${packagejson.version} -m '${packagejson.name}-${packagejson.version}'`,
       `git push --tags`,
