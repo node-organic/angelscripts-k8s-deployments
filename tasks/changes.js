@@ -76,7 +76,7 @@ module.exports = function (angel) {
     for (let i = 0; i < tagCommitPairs.length; i++) {
       let parts = tagCommitPairs[i].split(' ')
       let commit = parts[0]
-      let iRelease = parts[1].substr(parts[1].lastIndexOf('-') + 1)
+      let iRelease = parts[1].replace('refs/tags/' + cellName + '-', '')
       if (highestRelease === null || semver.lt(highestRelease, iRelease)) {
         highestRelease = iRelease
         highestReleaseCommit = commit
