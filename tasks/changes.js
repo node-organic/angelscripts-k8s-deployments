@@ -69,7 +69,7 @@ module.exports = function (angel) {
   }
 
   const getLastReleaseCommit = async function (cellName) {
-    let cmd = `git show-ref --tags | grep ${cellName}`
+    let cmd = `git show-ref --tags | grep refs/tags/${cellName}`
     let tagCommitPairs = (await execAndReturnOutput(cmd)).split('\n').filter(v => v)
     let highestRelease = null
     let highestReleaseCommit = null
@@ -77,9 +77,13 @@ module.exports = function (angel) {
       let parts = tagCommitPairs[i].split(' ')
       let commit = parts[0]
       let iRelease = parts[1].replace('refs/tags/' + cellName + '-', '')
-      if (highestRelease === null || semver.lt(highestRelease, iRelease)) {
-        highestRelease = iRelease
-        highestReleaseCommit = commit
+      try {
+        if (highestRelease === null || semver.lt(highestRelease, iRelease)) {
+          highestRelease = iRelease
+          highestReleaseCommit = commit
+        }
+      } catch (e) {
+        // ignore invalid releases 
       }
     }
     return highestReleaseCommit
