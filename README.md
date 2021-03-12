@@ -20,6 +20,10 @@ $ npm i angelscripts-k8s-deployments --save
 $ edit dna/cells/my-cell/production.yaml
 ```
 
+### custom kubeconfig
+
+Create a `.kubeconfig` file within the repo root folder, it will be used for `kubectl`.
+
 ## commands
 
 ### `angel release`
