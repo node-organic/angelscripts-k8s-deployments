@@ -6,4 +6,5 @@ module.exports = async function (angel) {
   require('./tasks/release')(angel)
   require('./tasks/dna-to-yaml')(angel)
   require('./tasks/changes')(angel)
+  require('./tasks/kube')(angel)
 }

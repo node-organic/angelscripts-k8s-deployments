@@ -26,6 +26,10 @@ Create a `.kubeconfig` file within the repo root folder, it will be used for `ku
 
 ## commands
 
+### `angel kube :cmd`
+
+Executes `kubectl :cmd` by specifying `--kubeconfig` if custom config is provided.
+
 ### `angel release`
 Does `angel release patch production default`. ;)
 
