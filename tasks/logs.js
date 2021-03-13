@@ -26,7 +26,7 @@ module.exports = function (angel) {
       return
     }
     pods.forEach(function (pod, podIndex) {
-      let cmd = `kubectl logs -f ${pod} --timestamps --since 10m`
+      let cmd = `npx angel kube logs -f ${pod} --timestamps --since 10m`
       let podColor = colorMap[podIndex]
       console.log(chalk.keyword(podColor)(cmd))
       let child = exec(cmd, {

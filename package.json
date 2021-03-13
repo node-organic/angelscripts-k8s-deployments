@@ -20,7 +20,7 @@
     "json-to-pretty-yaml": "^1.2.2",
     "lodash.uniq": "^4.5.0",
     "organic-dna-branches": "0.0.2",
-    "organic-stem-k8s-get-pods": "^2.1.1",
+    "organic-stem-k8s-get-pods": "^2.2.1",
     "organic-stem-skeleton-find-root": "^2.0.1",
     "p-iteration": "^1.1.8",
     "path-exists": "^4.0.0",
