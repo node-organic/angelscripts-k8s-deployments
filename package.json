@@ -8,12 +8,8 @@
     "release-major": "npm version major && npm publish",
     "postversion": "git push origin master && git push origin master --tags"
   },
-  "peerDependencies": {
-    "organic-angel": "0.3.x",
-    "angelscripts-dockerbuild": "^3.0.0"
-  },
   "dependencies": {
-    "angelabilities-exec": "^1.0.0",
+    "angelabilities-exec": "^1.0.1",
     "chalk": "^4.0.0",
     "dependency-tree": "^7.2.1",
     "fast-glob": "^3.2.2",
